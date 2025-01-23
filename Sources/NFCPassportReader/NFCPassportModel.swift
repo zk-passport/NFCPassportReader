@@ -425,13 +425,13 @@ public class NFCPassportModel {
 
     }
 
-    private func ensureReadDataNotBeenTamperedWith( useCMSVerification: Bool ) throws  {
+    private func ensureReadDataNotBeenTamperedWith(useCMSVerification: Bool) throws {
         guard let sod = getDataGroup(.SOD) as? SOD else {
-            throw PassiveAuthenticationError.SODMissing("No SOD found" )
+            throw PassiveAuthenticationError.SODMissing("No SOD found")
         }
-
+    
         // Get SOD Content and verify that its correctly signed by the Document Signing Certificate
-        var signedData : Data
+        var signedData: Data
         documentSigningCertificateVerified = false
         do {
             if useCMSVerification {
@@ -451,24 +451,22 @@ public class NFCPassportModel {
         let (sodHashAlgorythm, sodHashes) = try parseSODSignatureContent( asn1Data )
         
         var errors : String = ""
-        for (id,dgVal) in dataGroupsRead {
-            guard let sodHashVal = sodHashes[id] else {
-                // SOD and COM don't have hashes so these aren't errors
-                if id != .SOD && id != .COM {
-                    errors += "DataGroup \(id) is missing!\n"
-                }
-                continue
-            }
-            
-            let computedHashVal = binToHexRep(dgVal.hash(sodHashAlgorythm))
-            
-            var match = true
-            if computedHashVal != sodHashVal {
-                errors += "\(id) invalid hash:\n  SOD hash:\(sodHashVal)\n   Computed hash:\(computedHashVal)\n"
-                match = false
+        for (id, sodHashVal) in sodHashes {
+            let computedHashVal: String?
+            if let dgVal = dataGroupsRead[id] {
+                computedHashVal = binToHexRep(dgVal.hash(sodHashAlgorythm))
+            } else {
+                computedHashVal = nil
             }
 
-            dataGroupHashes[id] = DataGroupHash(id: id.getName(), sodHash:sodHashVal, computedHash:computedHashVal, match:match)
+            var match = false
+            if let computedHashVal = computedHashVal, computedHashVal == sodHashVal {
+                match = true
+            } else if let computedHashVal = computedHashVal {
+                errors += "\(id) invalid hash:\n  SOD hash:\(sodHashVal)\n   Computed hash:\(computedHashVal)\n"
+            }
+
+            dataGroupHashes[id] = DataGroupHash(id: id.getName(), sodHash: sodHashVal, computedHash: computedHashVal, match: match)
         }
         
         if errors != "" {
