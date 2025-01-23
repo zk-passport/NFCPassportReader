@@ -283,13 +283,13 @@ public class NFCPassportModel {
     ///         Currently defaulting to manual verification - hoping this will replace the CMS verification totally
     ///         CMS Verification currently there just in case
     public func verifyPassport( masterListURL: URL?, useCMSVerification : Bool = false ) {
-        if let masterListURL = masterListURL {
-            do {
-                try validateAndExtractSigningCertificates( masterListURL: masterListURL )
-            } catch let error {
-                verificationErrors.append( error )
-            }
+        // if let masterListURL = masterListURL {
+        do {
+            try validateAndExtractSigningCertificates( masterListURL: masterListURL )
+        } catch let error {
+            verificationErrors.append( error )
         }
+        // }
         
         do {
             try ensureReadDataNotBeenTamperedWith( useCMSVerification : useCMSVerification )
@@ -401,7 +401,7 @@ public class NFCPassportModel {
         return revoked
     }
 
-    private func validateAndExtractSigningCertificates( masterListURL: URL ) throws {
+    private func validateAndExtractSigningCertificates( masterListURL: URL? ) throws {
         self.passportCorrectlySigned = false
         
         guard let sod = getDataGroup(.SOD) else {
@@ -412,12 +412,14 @@ public class NFCPassportModel {
         let cert = try OpenSSLUtils.getX509CertificatesFromPKCS7( pkcs7Der: data ).first!
         self.certificateSigningGroups[.documentSigningCertificate] = cert
 
-        let rc = OpenSSLUtils.verifyTrustAndGetIssuerCertificate( x509:cert, CAFile: masterListURL )
-        switch rc {
-        case .success(let csca):
-            self.certificateSigningGroups[.issuerSigningCertificate] = csca
-        case .failure(let error):
-            throw error
+        if let masterListURL = masterListURL {
+            let rc = OpenSSLUtils.verifyTrustAndGetIssuerCertificate( x509:cert, CAFile: masterListURL )
+            switch rc {
+            case .success(let csca):
+                self.certificateSigningGroups[.issuerSigningCertificate] = csca
+            case .failure(let error):
+                throw error
+            }
         }
                 
         Logger.passportReader.debug( "Passport passed SOD Verification" )
