@@ -105,7 +105,7 @@ public class SOD : DataGroup {
     /// Extracts the encapsulated content section from a SignedData PKCS7 container (if present)
     /// - Returns: The encapsulated content from a PKCS7 container if we could read it
     /// - Throws: Error if we can't find or read the encapsulated content
-    func getEncapsulatedContent() throws -> Data {
+    public func getEncapsulatedContent() throws -> Data {
         guard let signedData = asn1.getChild(1)?.getChild(0),
               let encContent = signedData.getChild(2)?.getChild(1),
               let content = encContent.getChild(0) else {
@@ -125,7 +125,7 @@ public class SOD : DataGroup {
     /// Gets the digest algorithm used to hash the encapsulated content in the signed data section (if present)
     /// - Returns: The digest algorithm used to hash the encapsulated content in the signed data section
     /// - Throws: Error if we can't find or read the digest algorithm
-    func getEncapsulatedContentDigestAlgorithm() throws -> String {
+    public func getEncapsulatedContentDigestAlgorithm() throws -> String {
         guard let signedData = asn1.getChild(1)?.getChild(0),
               let digestAlgo = signedData.getChild(1)?.getChild(0)?.getChild(0) else {
             throw OpenSSLError.UnableToExtractSignedDataFromPKCS7("Data in invalid format")
