@@ -66,7 +66,7 @@ public class SOD : DataGroup {
     private var asn1 : ASN1Item!
     private var pubKey : OpaquePointer?
 
-    override var datagroupType: DataGroupId { .SOD }
+    public override var datagroupType: DataGroupId { .SOD }
     
     required init( _ data : [UInt8] ) throws {
         try super.init(data)
@@ -86,7 +86,7 @@ public class SOD : DataGroup {
     
     /// Returns the public key from the embedded X509 certificate
     /// - Returns pointer to the public key
-    func getPublicKey( ) throws -> OpaquePointer {
+    public func getPublicKey( ) throws -> OpaquePointer {
         
         if let key = pubKey {
             return key
@@ -137,7 +137,7 @@ public class SOD : DataGroup {
     /// Gets the signed attributes section (if present)
     /// - Returns: the signed attributes section
     /// - Throws: Error if we can't find or read the signed attributes
-    func getSignedAttributes( ) throws -> Data {
+    public func getSignedAttributes( ) throws -> Data {
         
         // Get the SignedAttributes section.
         guard let signedData = asn1.getChild(1)?.getChild(0),
@@ -164,7 +164,7 @@ public class SOD : DataGroup {
 /// Gets the message digest from the signed attributes section (if present)
 /// - Returns: the message digest
 /// - Throws: Error if we can't find or read the message digest
-    func getMessageDigestFromSignedAttributes( ) throws -> Data {
+    public func getMessageDigestFromSignedAttributes( ) throws -> Data {
         
         // For the SOD, the SignedAttributes consists of:
         // A Content type Object (which has the value of the attributes content type)
@@ -201,7 +201,7 @@ public class SOD : DataGroup {
     /// Gets the signature data (if present)
     /// - Returns: the signature
     /// - Throws: Error if we can't find or read the signature
-    func getSignature( ) throws -> Data {
+    public func getSignature( ) throws -> Data {
         
         guard let signedData = asn1.getChild(1)?.getChild(0),
               let signerInfo = signedData.getChild(4),
@@ -222,7 +222,7 @@ public class SOD : DataGroup {
     /// Gets the signature algorithm used (if present)
     /// - Returns: the signature algorithm used
     /// - Throws: Error if we can't find or read the signature algorithm
-    func getSignatureAlgorithm( ) throws -> String {
+    public func getSignatureAlgorithm( ) throws -> String {
         
         guard let signedData = asn1.getChild(1)?.getChild(0),
               let signerInfo = signedData.getChild(4),
