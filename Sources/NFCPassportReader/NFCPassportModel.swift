@@ -466,7 +466,7 @@ public class NFCPassportModel {
                 errors += "\(id) invalid hash:\n  SOD hash:\(sodHashVal)\n   Computed hash:\(computedHashVal)\n"
             }
 
-            dataGroupHashes[id] = DataGroupHash(id: id.getName(), sodHash: sodHashVal, computedHash: computedHashVal, match: match)
+            dataGroupHashes[id] = DataGroupHash(id: id.getName(), sodHash: sodHashVal, computedHash: computedHashVal ?? "", match: match)
         }
         
         if errors != "" {
