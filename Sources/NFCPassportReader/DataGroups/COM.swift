@@ -56,6 +56,6 @@ public class COM : DataGroup {
                 dataGroupsPresent.append( DataGroupParser.dataGroupNames[index] )
             }
         }
-        Logger.passportReader.debug( "DG Found - \(self.dataGroupsPresent)" )
+        //Logger.passportReader.debug( "DG Found - \(self.dataGroupsPresent)" )
     }
 }
