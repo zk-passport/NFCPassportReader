@@ -140,7 +140,7 @@ public class TagReader {
          // So, we are expecting 0x7C (= tag), 0x00 (= length) here.
         
         // 0x10 is class command chaining
-        let instructionClass : UInt8 = isLast ? 0x00 : 0x10
+        let instructionClass : UInt8 = 0x00
         let INS_BSI_GENERAL_AUTHENTICATE : UInt8 = 0x86
         
         let cmd : NFCISO7816APDU = NFCISO7816APDU(instructionClass: instructionClass, instructionCode: INS_BSI_GENERAL_AUTHENTICATE, p1Parameter: 0x00, p2Parameter: 0x00, data: commandData, expectedResponseLength: lengthExpected)
